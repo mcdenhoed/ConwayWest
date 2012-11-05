@@ -8,7 +8,9 @@ from pygame.locals import *
 RED = (255, 0, 0)
 GREEN = (0, 255, 0)
 BLUE = (0, 0, 255)
+WHITE = (255, 255, 255)
 
+mouse = [0,0]
 class Pix():
 	def __init__(alive):
 		self.alive = alive
@@ -23,6 +25,7 @@ class Game():
 	
 	def __init__(self):
 		pygame.init()
+		self.mouseclick = False
 		self.timer = pygame.time.Clock()
 		self.screen = pygame.display.set_mode((0,0),pygame.FULLSCREEN)
 		self.width, self.height = self.screen.get_size()
@@ -32,21 +35,29 @@ class Game():
 		###########################
 		self.background = pygame.Surface((self.width, self.height)).convert()
 		self.background.fill((0,0,0))
-		pygame.Surface.blit(self.background, self.screen, (0,0))
-		self.pixArray = pygame.PixelArray(self.background)
 
-	def neighbors(self, tup):
-		x, y, on = tup
-		if on:
-			pass
-		else	
-			pass
+	def mod(self, num, base):
+		return num%base
+
+	def drawThing(self, pos):
+		x, y = pos
+		x1 = (x+1)%self.width
+		y1 = (y+1)%self.height
+		pixArray = pygame.PixelArray(self.background)
+		pixArray[x][y] = WHITE
+		pixArray[x1][y] = WHITE
+		pixArray[x][y1] = WHITE
+		pixArray[x1][y1] = WHITE
+		for i in range(x-1, x+2):
+			for j in range(y-1, y+2):
+				self.interesting.add((mod(i,self.width), mod(j, self.height)))
+		del pixArray
 
 	def update(self):
-		pixArray = pygame.PixelArray(self.background)
-		for yo in self.interesting:
+		if self.mouseclick:
+			drawThing(pygame.mouse.get_pos())
+		else:
 			
-		del pixArray
 
 	def draw(self):
 		self.screen.blit(self.background, (0,0))
@@ -58,11 +69,14 @@ class Game():
 				if event.type == pygame.QUIT:
 					sys.exit()
 				elif event.type == pygame.MOUSEBUTTONDOWN:
+					self.mouseclick = True
+					mouse = pygame.mouse.get_pos()
 					pass
 				elif event.type == pygame.MOUSEMOTION:
+					mouse = pygame.mouse.get_pos()
 					pass
 				elif event.type == pygame.MOUSEBUTTONUP:
-					pass
+					self.mouseclick = False
 			self.update()
 			self.draw()
 			self.timer.tick(60)
