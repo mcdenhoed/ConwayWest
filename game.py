@@ -12,9 +12,11 @@ WHITE = (255, 255, 255)
 
 mouse = [0,0]
 class Pix():
-	def __init__(alive):
-		self.alive = alive
-
+	def __init__(self, pos):
+		self.x, self.y = pos
+		self.old = False
+		self.new = False
+		self.pixArray = None
 class Game():
 	#############################
 	##initializing pygame stuff##
@@ -39,25 +41,34 @@ class Game():
 	def mod(self, num, base):
 		return num%base
 
+	def neighbors(self, pos):
+		#find a nice way to determine how many o the surrounding squares are 1. that is all.
+		#Return from that the number. Other method can use it.
+		pass
 	def drawThing(self, pos):
 		x, y = pos
 		x1 = (x+1)%self.width
 		y1 = (y+1)%self.height
-		pixArray = pygame.PixelArray(self.background)
-		pixArray[x][y] = WHITE
-		pixArray[x1][y] = WHITE
-		pixArray[x][y1] = WHITE
-		pixArray[x1][y1] = WHITE
+		self.pixArray[x][y] = WHITE
+		self.pixArray[x1][y] = WHITE
+		self.pixArray[x][y1] = WHITE
+		self.pixArray[x1][y1] = WHITE
 		for i in range(x-1, x+2):
 			for j in range(y-1, y+2):
-				self.interesting.add((mod(i,self.width), mod(j, self.height)))
-		del pixArray
+				self.interesting.add(Pix(mod(i,self.width), mod(j, self.height)))
 
 	def update(self):
+		self.pixArray = pygame.PixelArray(self.background)
 		if self.mouseclick:
 			drawThing(pygame.mouse.get_pos())
 		else:
-			
+			for pix in self.interesting:
+				pix.old = pix.new
+				if pix.old:
+					
+				else:
+					pass
+		del self.PixArray
 
 	def draw(self):
 		self.screen.blit(self.background, (0,0))
