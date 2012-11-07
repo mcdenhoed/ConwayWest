@@ -12,12 +12,6 @@ WHITE = (255, 255, 255)
 BLACK = (0,0,0)
 mouse = [0,0]
 
-class Pix():
-	def __init__(self, pos):
-		self.x, self.y = pos
-		self.old = False
-		self.new = False
-
 class Game():
 	#############################
 	##initializing pygame stuff##
@@ -77,7 +71,6 @@ class Game():
 	def update(self):
 		self.pixArray = pygame.PixelArray(self.background)
 		remove = set()
-		print(len(self.interesting))
 		if self.mouseclick:
 			self.drawThing(pygame.mouse.get_pos())
 		else:
