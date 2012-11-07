@@ -47,12 +47,14 @@ class Game():
 		x, y = pos
 		#find a nice way to determine how many o the surrounding squares are 1. that is all.
 		#Return from that the number. Other method can use it.
-		return sum(1 for a in range(x-1,x+2) for b in range(y-1,y+2) if (a,b) in self.interesting and self.interesting[(a,b)]["old"] is True)
+		#print([a for a in range(x-1,x+2) for b in range(y-1,y+2) if (a,b) in self.interesting and self.interesting[(a,b)] is True])
+		return sum(1 for a in range(x-1,x+2) for b in range(y-1,y+2) if (a,b) in self.interesting and self.interesting[(a,b)] is True)
+		
 		pass
 
 	def drawThing(self, pos):
 		x, y = pos
-		x1 = (x+10)%self.width
+		x1 = (x+1)%self.width
 		y1 = (y+1)%self.height
 		self.turnOnSquare((x,y))
 		self.turnOnSquare((x1,y))
@@ -62,29 +64,23 @@ class Game():
 	def turnOnSquare(self, pos):
 		x, y = pos
 		self.pixArray[x][y] = WHITE
-		self.temp.update(((i,j),dict(old=False,new=False)) for i in range(x-1, x+2) for j in range(y-1,y+2))# if not (i,j) in self.interesting)
-		self.temp[pos]["old"] = self.temp[pos]["new"]
-		self.temp[pos]["new"] = True
+		self.temp.update(((i,j),False) for i in range(x-1, x+2) for j in range(y-1,y+2) if not (i,j) in self.temp)
+		self.temp[pos] = True
 
 	def turnOffSquare(self, pos):
 		x,y = pos
 		self.pixArray[x][y] = BLACK
-		self.interesting[pos]["old"] = self.interesting[pos]["new"]
-		self.interesting[pos]["new"] = False
+		self.temp[pos] = False
  
-	def updateSquares(self):
-		for k,v in self.interesting.iteritems():
-			self.interesting[k]["old"] = v["new"]
-	
 	def update(self):
 		self.pixArray = pygame.PixelArray(self.background)
 		remove = set()
 		if self.mouseclick:
 			self.drawThing(pygame.mouse.get_pos())
 		else:
-			self.updateSquares()
-			for pos, values in self.interesting.iteritems():
-				if values["old"]:
+			for pos, turnedOn in self.interesting.iteritems():
+				if turnedOn:
+					print(self.neighbors(pos))
 					if self.neighbors(pos) < 2:
 						print('dead')
 						self.turnOffSquare(pos)
