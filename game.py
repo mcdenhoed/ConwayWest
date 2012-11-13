@@ -24,8 +24,10 @@ class Game():
 		pygame.init()
 		self.mouseclick = False
 		self.timer = pygame.time.Clock()
-		#self.screen = pygame.display.set_mode((0,0),pygame.FULLSCREEN)
-		self.screen = pygame.display.set_mode((800,200))
+		if "--fullscreen" in sys.argv:
+			self.screen = pygame.display.set_mode((0,0),pygame.FULLSCREEN)
+		else:
+			self.screen = pygame.display.set_mode((800,200))
 		self.width, self.height = self.screen.get_size()
 		self.interesting = dict()
 		self.temp = dict()
@@ -99,6 +101,8 @@ class Game():
 		while True:
 			for event in pygame.event.get():
 				if event.type == pygame.QUIT:
+					sys.exit()
+				elif event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE:
 					sys.exit()
 				elif event.type == pygame.MOUSEBUTTONDOWN:
 					self.mouseclick = True
