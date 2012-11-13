@@ -45,7 +45,7 @@ class Game():
 		#find a nice way to determine how many o the surrounding squares are 1. that is all.
 		#Return from that the number. Other method can use it.
 		#print([a for a in range(x-1,x+2) for b in range(y-1,y+2) if (a,b) in self.interesting and self.interesting[(a,b)] is True])
-		temp = sum(1 for a in range(x-1,x+2) for b in range(y-1,y+2) if (a,b) in self.interesting and self.interesting[(a,b)] is True)
+		temp = sum(1 for a in range(x-1,x+2) for b in range(y-1,y+2) if (a%self.width, b%self.height) in self.interesting and self.interesting[a%self.width, b%self.height] is True)
 		if self.interesting[pos]:
 			return temp - 1
 		else: return temp
@@ -62,7 +62,7 @@ class Game():
 	def turnOnSquare(self, pos):
 		x, y = pos
 		self.pixArray[x%self.width][y%self.height] = WHITE
-		self.temp.update(((i%self.width,j%self.height),False) for i in range(x-1, x+2) for j in range(y-1,y+2) if not ((i,j) in self.temp or (i,j) in self.interesting))
+		self.temp.update(((i%self.width,j%self.height),False) for i in range(x-1, x+2) for j in range(y-1,y+2) if not ((i%self.width,j%self.height) in self.temp or (i%self.width,j%self.height) in self.interesting))
 		self.temp[pos] = True
 
 	def turnOffSquare(self, pos):
