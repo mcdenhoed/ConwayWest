@@ -12,6 +12,45 @@ WHITE = (255, 255, 255)
 BLACK = (0,0,0)
 mouse = [0,0]
 
+sBrushDefault = '''\
+OO
+O.O
+O'''
+sBrushGun = '''\
+........................O
+......................O.O
+............OO......OO............OO
+...........O...O....OO............OO
+OO........O.....O...OO
+OO........O...O.OO....O.O
+..........O.....O.......O
+...........O...O
+............OO'''
+sBrushNewGun = '''\
+.......................OO........................OO
+.......................OO........................OO
+.........................................OO
+........................................O..O
+.........................................OO
+
+....................................OOO
+....................................O.O
+.........OO.........................OOO
+.........OO.........................OO
+........O..O.......................OOO
+........O..O.OO....................O.O
+........O....OO....................OOO
+..........OO.OO
+...............................OO
+.....................OO.......O..O
+.....................OO........OO
+.................................................OO
+.................................................OO
+
+....OO..................O
+OO....OOOO..........OO..OO.OOO
+OO..OO.OOO..........OO....OOOO
+....O...................OO'''
 class Game():
 	#############################
 	##initializing pygame stuff##
@@ -37,6 +76,9 @@ class Game():
 		self.background = pygame.Surface((self.width, self.height)).convert()
 		self.background.fill((0,0,0))
 		self.pixArray = None 
+		self.brushDefault = self.stringToBrush(sBrushDefault)
+		self.brushGun = self.stringToBrush(sBrushGun)
+		self.brushNewGun = self.stringToBrush(sBrushNewGun)
 	def mod(self, num, base):
 		return num%base
 
@@ -50,14 +92,21 @@ class Game():
 			return temp - 1
 		else: return temp
 
-	def drawThing(self, pos):
+	def stringToBrush(self, s):
+		points = []
+		lines = s.split('\n')
+		for i in range(len(lines)):
+			line = lines[i]
+			for j in range(len(line)):
+				if line[j] == 'O':
+					points.append((j,i))
+		return points
+
+	def drawThing(self, pos, brush=None):
+		if not brush: brush = self.brushDefault
 		x, y = pos
-		x1 = (x+2)%self.width
-		y1 = (y+1)%self.height
-		self.turnOnSquare((x,y))
-		self.turnOnSquare((x1,y))
-		self.turnOnSquare((x,y1))
-		self.turnOnSquare((x1+1,y1))
+		for (dx,dy) in brush:
+			self.turnOnSquare((x+dx, y+dy))
 	
 	def turnOnSquare(self, pos):
 		x, y = pos
