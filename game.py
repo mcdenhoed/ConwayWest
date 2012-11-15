@@ -126,17 +126,17 @@ class Game():
 			self.drawThing(pygame.mouse.get_pos())
 		else:
 			for pos, turnedOn in self.interesting.iteritems():
-				if turnedOn:
-					if self.neighbors(pos) < 2:
-						self.turnOffSquare(pos)
-					elif self.neighbors(pos) > 3:
-						self.turnOffSquare(pos)
-				else:
-					if(self.neighbors(pos) == 3):
-						self.turnOnSquare(pos)
-					elif(self.neighbors(pos) == 0):
-						remove.add(pos)
+				neighbors = self.neighbors(pos)
+				if turnedOn and neighbors not in [2,3]:
+					self.turnOffSquare(pos)
+				elif neighbors == 3:
+					self.turnOnSquare(pos)
 			self.interesting.update(self.temp)
+			# update interesting set
+			for pos, turnedOn in self.interesting.iteritems():
+				neighbors = self.neighbors(pos)
+				if not turnedOn and self.neighbors(pos) == 0:
+					remove.add(pos)
 			self.temp = dict()
 			for r in remove:
 				self.interesting.pop(r)
