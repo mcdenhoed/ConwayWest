@@ -12,6 +12,47 @@ WHITE = (255, 255, 255)
 BLACK = (0,0,0)
 mouse = [0,0]
 
+brushes = {
+'default' : '''\
+OO
+O.O
+O''',
+'gun' : '''\
+........................O
+......................O.O
+............OO......OO............OO
+...........O...O....OO............OO
+OO........O.....O...OO
+OO........O...O.OO....O.O
+..........O.....O.......O
+...........O...O
+............OO''',
+'newgun' : '''\
+.......................OO........................OO
+.......................OO........................OO
+.........................................OO
+........................................O..O
+.........................................OO
+
+....................................OOO
+....................................O.O
+.........OO.........................OOO
+.........OO.........................OO
+........O..O.......................OOO
+........O..O.OO....................O.O
+........O....OO....................OOO
+..........OO.OO
+...............................OO
+.....................OO.......O..O
+.....................OO........OO
+.................................................OO
+.................................................OO
+
+....OO..................O
+OO....OOOO..........OO..OO.OOO
+OO..OO.OOO..........OO....OOOO
+....O...................OO'''
+}
 class Game():
 	#############################
 	##initializing pygame stuff##
@@ -37,6 +78,11 @@ class Game():
 		self.background = pygame.Surface((self.width, self.height)).convert()
 		self.background.fill((0,0,0))
 		self.pixArray = None 
+		if '--brush' in sys.argv:
+			sBrush = brushes[sys.argv[sys.argv.index('--brush') + 1]]
+		else:
+			sBrush = brushes['default']
+		self.brush = self.stringToBrush(sBrush)
 	def mod(self, num, base):
 		return num%base
 
@@ -50,14 +96,21 @@ class Game():
 			return temp - 1
 		else: return temp
 
-	def drawThing(self, pos):
+	def stringToBrush(self, s):
+		points = []
+		lines = s.split('\n')
+		for i in range(len(lines)):
+			line = lines[i]
+			for j in range(len(line)):
+				if line[j] == 'O':
+					points.append((j,i))
+		return points
+
+	def drawThing(self, pos, brush=None):
+		if not brush: brush = self.brush
 		x, y = pos
-		x1 = (x+2)%self.width
-		y1 = (y+1)%self.height
-		self.turnOnSquare((x,y))
-		self.turnOnSquare((x1,y))
-		self.turnOnSquare((x,y1))
-		self.turnOnSquare((x1+1,y1))
+		for (dx,dy) in brush:
+			self.turnOnSquare((x+dx, y+dy))
 	
 	def turnOnSquare(self, pos):
 		x, y = pos
@@ -77,17 +130,17 @@ class Game():
 			self.drawThing(pygame.mouse.get_pos())
 		else:
 			for pos, turnedOn in self.interesting.iteritems():
-				if turnedOn:
-					if self.neighbors(pos) < 2:
-						self.turnOffSquare(pos)
-					elif self.neighbors(pos) > 3:
-						self.turnOffSquare(pos)
-				else:
-					if(self.neighbors(pos) == 3):
-						self.turnOnSquare(pos)
-					elif(self.neighbors(pos) == 0):
-						remove.add(pos)
+				neighbors = self.neighbors(pos)
+				if turnedOn and neighbors not in [2,3]:
+					self.turnOffSquare(pos)
+				elif neighbors == 3:
+					self.turnOnSquare(pos)
 			self.interesting.update(self.temp)
+			# update interesting set
+			for pos, turnedOn in self.interesting.iteritems():
+				neighbors = self.neighbors(pos)
+				if not turnedOn and self.neighbors(pos) == 0:
+					remove.add(pos)
 			self.temp = dict()
 			for r in remove:
 				self.interesting.pop(r)
