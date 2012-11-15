@@ -12,11 +12,12 @@ WHITE = (255, 255, 255)
 BLACK = (0,0,0)
 mouse = [0,0]
 
-sBrushDefault = '''\
+brushes = {
+'default' : '''\
 OO
 O.O
-O'''
-sBrushGun = '''\
+O''',
+'gun' : '''\
 ........................O
 ......................O.O
 ............OO......OO............OO
@@ -25,8 +26,8 @@ OO........O.....O...OO
 OO........O...O.OO....O.O
 ..........O.....O.......O
 ...........O...O
-............OO'''
-sBrushNewGun = '''\
+............OO''',
+'newgun' : '''\
 .......................OO........................OO
 .......................OO........................OO
 .........................................OO
@@ -51,6 +52,7 @@ sBrushNewGun = '''\
 OO....OOOO..........OO..OO.OOO
 OO..OO.OOO..........OO....OOOO
 ....O...................OO'''
+}
 class Game():
 	#############################
 	##initializing pygame stuff##
@@ -76,9 +78,11 @@ class Game():
 		self.background = pygame.Surface((self.width, self.height)).convert()
 		self.background.fill((0,0,0))
 		self.pixArray = None 
-		self.brushDefault = self.stringToBrush(sBrushDefault)
-		self.brushGun = self.stringToBrush(sBrushGun)
-		self.brushNewGun = self.stringToBrush(sBrushNewGun)
+		if '--brush' in sys.argv:
+			sBrush = brushes[sys.argv[sys.argv.index('--brush') + 1]]
+		else:
+			sBrush = brushes['default']
+		self.brush = self.stringToBrush(sBrush)
 	def mod(self, num, base):
 		return num%base
 
@@ -103,7 +107,7 @@ class Game():
 		return points
 
 	def drawThing(self, pos, brush=None):
-		if not brush: brush = self.brushDefault
+		if not brush: brush = self.brush
 		x, y = pos
 		for (dx,dy) in brush:
 			self.turnOnSquare((x+dx, y+dy))
